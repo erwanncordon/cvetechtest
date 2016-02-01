@@ -56,6 +56,6 @@ You should unit test your application, and if you feel so inclined we welcome yo
 
 When writing a RESTful API you are representing a *resource* above all other things, and should be mindful in your application's public interfaces because of this
 
-You are welcome to store the CVE's you download from Mitre in what ever fashion you wish, we suggest that you use a database to store the values from the file you download from Mitre, however you could also pre-parse the file and store the pointers to each CVE within the file.
+You are welcome to store the CVE's you download from Mitre in what ever fashion you wish, we suggest that you use an existing database technology to store the values from the file you download from Mitre, however you may choose which ever solution you think best.
 
 
