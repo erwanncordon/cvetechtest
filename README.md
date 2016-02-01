@@ -41,10 +41,10 @@ Your task is to create a RESTful API that presents this data in a structured and
 
 Your completed application should present the following interfaces and functionality:
 
-| Method / Interface  | Description |
-| ------------------- | ------------- |
-| GET - /cve/:cveNumber  | Return a single CVE resource  |
-| GET - /cve  | Return multiple CVE resources. It should support: limiting of results, result offsets, the year of the vulnerabilities publishing  |
+| Method | Interface | Description |
+| ------ | --------- | ----------- |
+| GET | /cve/:cveNumber  | Return a single CVE resource  |
+| GET | /cve  | Return multiple CVE resources. It should support: limiting of results, result offsets, the year of the vulnerabilities publishing  |
 
 Your interfaces should respond contextually based upon the Accept header sent by the requesting client, you may default to what ever preset you prefer.
 
