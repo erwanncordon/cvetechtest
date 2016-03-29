@@ -1,0 +1,14 @@
+<phpunit bootstrap="./Tests/Bootstrap.php" colors="true" backupGlobals="false">
+    <logging>
+        <log type="coverage-html" target="reports/" charset="UTF-8" />
+    </logging>
+    <testsuite name='Name your suite'>
+        <directory suffix='.php'>./Tests</directory>
+    </testsuite>
+    <filter>
+        <blacklist>
+            <directory>./vendor</directory>
+        </blacklist>
+    </filter>
+</phpunit>
+

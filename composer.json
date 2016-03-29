@@ -1,0 +1,24 @@
+{
+    "name": "erwanncordon/cvetechtest",
+    "description": "RESTful Technical Test",
+    "authors": [
+        {
+            "name": "Erwann Cordon",
+            "email": "erwanncordon@hotmail.co.uk"
+        }
+    ],
+    "require": {
+        "monolog/monolog": "^1.18",
+        "php-curl-class/php-curl-class": "^4.11",
+        "robmorgan/phinx": ">=0.5"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "5.2.*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Cve\\": "Library/",
+            "Cve\\Tests\\": "Tests/"
+        }
+    }
+}
