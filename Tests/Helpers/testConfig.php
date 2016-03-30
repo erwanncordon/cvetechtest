@@ -1,4 +1,5 @@
 <?php
+use CveTests\Mocks\MockConfig;
 
 /**
  * Created by PhpStorm.
@@ -19,16 +20,12 @@ class testConfig extends PHPUnit_Framework_TestCase
         $MockConfig::setConfig(array('sometestKey' => 'test'));
         $this->assertEquals('test', $MockConfig::getConfig('sometestKey'));
     }
-}
 
-class MockConfig extends \Cve\Helpers\Config {
-
-    public function __construct() {
-        //clear config
-        parent::$config = null;
-    }
-
-    public function getConfigVar() {
-        return parent::$config;
+    /**
+     * @expectedException \Cve\Exceptions\MissingConfigException
+     * @expectedExceptionMessage Config: doo could not be found
+     */
+    public function testGetConfigThrowsMissingConfigExceptionIfNoConfigFound(){
+        \Cve\Helpers\Config::getConfig('doo');
     }
 }

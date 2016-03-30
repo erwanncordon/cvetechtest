@@ -6,7 +6,7 @@
  * Time: 14:47
  */
 $config = array(
-    'cve_file_location' => $_SERVER['DOCUMENT_ROOT'] . '/cve_files/',
+    'cve_file_location' => $_SERVER['DOCUMENT_ROOT'] . '/cve_files/allitems.csv',
     'db' => array(
         'dbname' => 'cve',
         'host' => 'localhost',

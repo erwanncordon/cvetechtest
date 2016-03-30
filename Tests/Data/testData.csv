@@ -1,0 +1,4 @@
+CVE-1999-0001,Candidate,"Some Description","Some References| some second reference",  "some Phaze","some vote1| somesecondvote", Commenter> comment1 | scondCommenter> comment2
+CVE-1999-0002,Candidate,"Some Description","Some References| some second reference",  "some Phaze","some vote1| somesecondvote",Commenter> comment1 | scondCommenter> comment2
+CVE-nope-0002,Entry,"Buffer overflow in NFS mountd gives root access to remote attackers, mostly in Linux systems.","SGI:19981006-01-I   |   URL:ftp://patches.sgi.com/support/free/security/advisories/19981006-01-I   |   CERT:CA-98.12.mountd   |   CIAC:J-006   |   URL:http://www.ciac.org/ciac/bulletins/j-006.shtml   |   BID:121   |   URL:http://www.securityfocus.com/bid/121   |   XF:linux-mountd-bo",,,
+CVE-1999-0003,Entry

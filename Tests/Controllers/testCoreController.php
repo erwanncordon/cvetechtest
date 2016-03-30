@@ -4,7 +4,7 @@ class testCoreController extends PHPUnit_Framework_TestCase
 {
 
     public function testConstructor() {
-        $logger = $this->getLoggerMock();
+        $logger = new \CveTests\Mocks\MockLogger();
         $mockCoreController = $this->getMockForAbstractClass('mockCoreController', array(), 'coreController', false, false, true, array('setModels', 'getheader'));
         $mockCoreController->expects($this->once())
             ->method('setModels');
@@ -19,7 +19,7 @@ class testCoreController extends PHPUnit_Framework_TestCase
     }
 
     public function testConstructorDefaultsToXML() {
-        $logger = $this->getLoggerMock();
+        $logger = new \CveTests\Mocks\MockLogger();
         $mockCoreController = $this->getMockForAbstractClass('mockCoreController', array(), 'coreController', false, false, true, array('setModels', 'getheader'));
         $mockCoreController->expects($this->once())
             ->method('setModels');
@@ -27,15 +27,37 @@ class testCoreController extends PHPUnit_Framework_TestCase
             ->method('getheader')
             ->with('Accept')
             ->willReturn('not json');
-        /** @var \Cve\Controllers\CoreController $mockCoreController */
+        /** @var mockCoreController $mockCoreController */
         $mockCoreController->__construct($logger);
 
         $this->assertEquals($logger, $mockCoreController->getLogger());
         $this->assertEquals('xml', $mockCoreController->getResponseType());
     }
 
-    public function getLoggerMock() {
-        return $this->getMock('\Monolog\Logger', array(), array(), '', false);
+    public function testCheckRequestMethod() {
+        $mockCoreController = $this->getMockForAbstractClass('mockCoreController', array(), 'coreController', false, false, true, array());
+        $_SERVER['REQUEST_METHOD'] = 'GET';
+        /** @var mockCoreController $mockCoreController */
+        $mockCoreController->checkRequestMethod('get');
+    }
+
+    public function testCheckRequestMethodWithPost() {
+        $mockCoreController = $this->getMockForAbstractClass('mockCoreController', array(), 'coreController', false, false, true, array());
+        $_SERVER['REQUEST_METHOD'] = 'POST';
+        /** @var mockCoreController $mockCoreController */
+        $mockCoreController->checkRequestMethod('PoST');
+    }
+
+    /**
+     * @throws \Exception
+     * @expectedException \Exception
+     * @expectedExceptionMessage Request method should be: POST and not: GET
+     */
+    public function testCheckRequestMethodThrowsExceptionIfIncorrectRequestMethod() {
+        $mockCoreController = $this->getMockForAbstractClass('mockCoreController', array(), 'coreController', false, false, true, array());
+        $_SERVER['REQUEST_METHOD'] = 'GET';
+        /** @var mockCoreController $mockCoreController */
+        $mockCoreController->checkRequestMethod('PoST');
     }
 }
 
@@ -48,6 +70,4 @@ abstract class mockCoreController extends \Cve\Controllers\CoreController
     public function getResponseType() {
         return $this->responseType;
     }
-
-
 }

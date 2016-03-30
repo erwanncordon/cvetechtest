@@ -31,6 +31,16 @@ abstract class CoreController
 
     abstract protected function setModels();
 
+    /**
+     * @param $expected
+     * @throws \Exception if request method does not match expected
+     */
+    public function checkRequestMethod($expected) {
+        if (strtolower($_SERVER['REQUEST_METHOD']) !== strtolower($expected)) {
+            throw new \Exception('Request method should be: ' . strtoupper($expected) . ' and not: ' . $_SERVER['REQUEST_METHOD']);
+        }
+    }
+
     public function getHeader($header) {
         return getallheaders()[$header];
     }
