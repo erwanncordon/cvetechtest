@@ -6,7 +6,7 @@
  * Date: 30/03/2016
  * Time: 16:44
  */
-class TestCVEModel extends PHPUnit_Framework_TestCase
+    class TestCVEModel extends PHPUnit_Framework_TestCase
 {
     public function testSaveCVERecordWithMocks() {
         $x = array(
@@ -176,6 +176,137 @@ class TestCVEModel extends PHPUnit_Framework_TestCase
         $this->assertEquals(1, $dbDriver->beginTransaction);
         $this->assertEquals(1, $dbDriver->commit);
     }
+
+    public function testGetRecord() {
+        $dbDriver = new \CveTests\Mocks\MockDBDriver();
+        $cveModel = new \Cve\Models\CVEModel(new \CveTests\Mocks\MockLogger(), $dbDriver);
+        $cveModel->getRecord('a_cv_number');
+        $this->assertEquals(
+            array(
+                array(
+                    'cve_records',
+                    array(
+                        array(
+                            'AND',
+                            '=',
+                            'name',
+                            'a_cv_number',
+                            'string'
+                        )
+                    )
+                )
+            ),
+            $dbDriver->fetch
+        );
+    }
+
+    public function testGetRecordsWithYearLimitAndOffset() {
+        $dbDriver = new \CveTests\Mocks\MockDBDriver();
+        $cveModel = new \Cve\Models\CVEModel(new \CveTests\Mocks\MockLogger(), $dbDriver);
+        $cveModel->getRecords(1, 2, 'somethingtolookfor');
+        $this->assertEquals(
+            array(
+                array(
+                    'cve_records',
+                    array(
+                        array(
+                            'AND',
+                            'LIKE',
+                            'name',
+                            'somethingtolookfor',
+                            'string'
+                        )
+                    ),
+                    1,
+                    2
+                )
+            ),
+            $dbDriver->fetchAll
+        );
+    }
+
+    public function testGetComments() {
+        $dbDriver = new \CveTests\Mocks\MockDBDriver();
+        $cveModel = new \Cve\Models\CVEModel(new \CveTests\Mocks\MockLogger(), $dbDriver);
+        $cveModel->getComments('somethingtolookfor');
+        $this->assertEquals(
+            array(
+                array(
+                    'cve_comments',
+                    array(
+                        array(
+                            'AND',
+                            '=',
+                            'cve_record_id',
+                            'somethingtolookfor',
+                            'string'
+                        )
+                    ),
+                    null,
+                    0,
+                    '\Cve\Models\CVEComment',
+                    'author, user_comment'
+                )
+            ),
+            $dbDriver->fetchAll
+        );
+    }
+
+    public function testGetReferences() {
+        $dbDriver = new \CveTests\Mocks\MockDBDriver();
+        $cveModel = new \Cve\Models\CVEModel(new \CveTests\Mocks\MockLogger(), $dbDriver);
+        $cveModel->getReferences('somethingtolookfor');
+        $this->assertEquals(
+            array(
+                array(
+                    'cve_references',
+                    array(
+                        array(
+                            'AND',
+                            '=',
+                            'cve_record_id',
+                            'somethingtolookfor',
+                            'string'
+                        )
+                    ),
+                    null,
+                    0,
+                    '\Cve\Models\CVEReference',
+                    'reference'
+                )
+            ),
+            $dbDriver->fetchAll
+        );
+    }
+
+    public function testGetVotes() {
+        $dbDriver = new \CveTests\Mocks\MockDBDriver();
+        $cveModel = new \Cve\Models\CVEModel(new \CveTests\Mocks\MockLogger(), $dbDriver);
+        $cveModel->getVotes('somethingtolookfor');
+        $this->assertEquals(
+            array(
+                array(
+                    'cve_votes',
+                    array(
+                        array(
+                            'AND',
+                            '=',
+                            'cve_record_id',
+                            'somethingtolookfor',
+                            'string'
+                        )
+                    ),
+                    null,
+                    0,
+                    '\Cve\Models\CVEVote',
+                    'vote'
+                )
+            ),
+            $dbDriver->fetchAll
+        );
+
+    }
+
 }
 
 

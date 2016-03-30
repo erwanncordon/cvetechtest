@@ -27,7 +27,7 @@ use Monolog\Handler\StreamHandler;
 
 // create a Logs and set then minimum log level
 $logger = new Logger('CVEModel api');
-$logLevel = (!empty(getallheaders()['X-LogLevel'])) ? getallheaders()['X-LogLevel'] : 'warn';
+$logLevel = (!empty(getallheaders()['X-LogLevel'])) ? getallheaders()['X-LogLevel'] : 'info';
 switch (strtolower($logLevel)) {
     case 'info' :
         $logLevel = Logger::INFO;
@@ -56,12 +56,16 @@ unset($urlParts[0]);
 if (!empty($urlParts)) {
     $urlParts = array_values($urlParts);
 }
-$controller->index($urlParts);
+try {
+    $controller->index($urlParts);
+} catch (\Exception $e) {
+    $logger->err($e->getMessage());
+}
 
 function show404()
 {
+    header("HTTP/1.0 404 Not Found");
     echo "<h1>404 Not Found</h1>";
     echo "The page that you have requested could not be found.";
-    header("HTTP/1.0 404 Not Found");
     exit;
 }

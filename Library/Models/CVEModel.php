@@ -89,4 +89,108 @@ class CVEModel extends CoreModel
         $this->dbDriver->truncate("cve_references");
         $this->dbDriver->truncate("cve_votes");
     }
+
+    public function getRecord($cveNumber) {
+        $where = [];
+        if ($cveNumber) {
+            $where[] =
+                array('AND', '=', 'name', $cveNumber, 'string');
+        }
+        try {
+            $records = $this->dbDriver->fetch(
+                'cve_records',
+                $where
+            );
+            if (!empty($records)) {
+                $record = array_pop($records);
+                $cveRecord = new CVERecord($this->logger, $this->dbDriver, $record['name'], $record['description'], $record['status'], $record['phase']);
+                $cveRecord->decorate();
+                return $cveRecord;
+            }
+            return null;
+        } catch (\Exception $e) {
+            $this->logger->err($e->getMessage());
+        }
+    }
+
+    public function getRecords($limit = null, $offset = 0, $year = null) {
+        $where = [];
+        if ($year) {
+            $where[] =
+                array('AND', 'LIKE', 'name', $year, 'string');
+        }
+        try {
+            $data = $this->dbDriver->fetchAll(
+                'cve_records',
+                $where,
+                $limit,
+                $offset
+            );
+            if (!empty($data)) {
+                $cveRecords = array();
+                foreach ($data as $record) {
+                    $cveRecord = new CVERecord($this->logger, $this->dbDriver, $record['name'], $record['description'], $record['status'], $record['phase']);
+                    $cveRecord->decorate();
+                    $cveRecords[] = $cveRecord;
+                }
+                return $cveRecords;
+            }
+            return null;
+        } catch (\Exception $e) {
+            $this->logger->err($e->getMessage());
+        }
+        return null;
+    }
+
+    public function getComments($cve_record_id) {
+        $where = array(array('AND', '=', 'cve_record_id', $cve_record_id, 'string'));
+        try {
+            return $this->dbDriver->fetchAll(
+                'cve_comments',
+                $where,
+                null,
+                0,
+                '\Cve\Models\CVEComment',
+                'author, user_comment'
+            );
+        } catch (\Exception $e) {
+            $this->logger->err($e->getMessage());
+        }
+        return null;
+    }
+
+
+    public function getReferences($cve_record_id) {
+        $where = array(array('AND', '=', 'cve_record_id', $cve_record_id, 'string'));
+        try {
+            return $this->dbDriver->fetchAll(
+                'cve_references',
+                $where,
+                null,
+                0,
+                '\Cve\Models\CVEReference',
+                'reference'
+            );
+        } catch (\Exception $e) {
+            $this->logger->err($e->getMessage());
+        }
+        return null;
+    }
+
+    public function getVotes($cve_record_id) {
+        $where = array(array('AND', '=', 'cve_record_id', $cve_record_id, 'string'));
+        try {
+            return $this->dbDriver->fetchAll(
+                'cve_votes',
+                $where,
+                null,
+                0,
+                '\Cve\Models\CVEVote',
+                'vote'
+            );
+        } catch (\Exception $e) {
+            $this->logger->err($e->getMessage());
+        }
+        return null;
+    }
 }
