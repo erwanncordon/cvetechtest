@@ -35,6 +35,7 @@ class CveFiles extends CoreController
         ini_set('max_execution_time', 300);
         $this->checkRequestMethod('POST');
         $this->parseFromCsv();
+        $this->outputData(new genericData(array('status' => 'Finished importing CSV')), true);
     }
 
     protected function parseFromCsv() {

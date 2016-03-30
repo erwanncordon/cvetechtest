@@ -6,7 +6,7 @@
  * Date: 30/03/2016
  * Time: 16:44
  */
-    class TestCVEModel extends PHPUnit_Framework_TestCase
+class TestCVEModel extends PHPUnit_Framework_TestCase
 {
     public function testSaveCVERecordWithMocks() {
         $x = array(
@@ -15,7 +15,7 @@
             'comments' => 'comments',
             'references' => 'references'
         );
-        $mockCVEModel = $this->getMock('MockCVEModel', ['insertCVERecord', 'insertCVEComments', 'insertCVEVotes', 'insertCVEReferences'], [$x]);
+        $mockCVEModel = $this->getMock('SaveRecordMockCVEModel', ['insertCVERecord', 'insertCVEComments', 'insertCVEVotes', 'insertCVEReferences'], [$x]);
         $mockCVEModel->expects($this->once())
             ->method('insertCVERecord')
             ->with($x);
@@ -33,7 +33,7 @@
 
     public function testSaveCVERecord() {
         $record = require(__DIR__ . '/../Data/recordArray.php');
-        $cveModel = new MockCVEModel();
+        $cveModel = new SaveRecordMockCVEModel();
         $cveModel->saveCVERecord($record);
         $dbDriver = $cveModel->getDbDriver();
         $this->assertSame(
@@ -310,7 +310,7 @@
 }
 
 
-class MockCVEModel extends \Cve\Models\CVEModel
+class SaveRecordMockCVEModel extends \Cve\Models\CVEModel
 {
     public function __construct() {
         $logger = new \CveTests\Mocks\MockLogger();

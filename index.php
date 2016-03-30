@@ -58,14 +58,28 @@ if (!empty($urlParts)) {
 }
 try {
     $controller->index($urlParts);
+} catch (\Cve\Exceptions\IncorrectContentTypeException $e) {
+    header('HTTP/1.0 415 Unsupported Media Type');
+    echo '<h1>Unsupport Request Content Type</h1>';
+    echo 'The url you are hitting does not support the sent content type.';
 } catch (\Exception $e) {
     $logger->err($e->getMessage());
+    showGracefullError();
 }
 
 function show404()
 {
-    header("HTTP/1.0 404 Not Found");
-    echo "<h1>404 Not Found</h1>";
-    echo "The page that you have requested could not be found.";
+    header('HTTP/1.0 404 Not Found');
+    echo '<h1>404 Not Found</h1>';
+    echo 'The page that you have requested could not be found.';
+    exit;
+}
+
+
+function showGracefullError()
+{
+    header('HTTP/1.0 500 Internal Server Error');
+    echo '<h1>404 Not Found</h1>';
+    echo 'The page that you have requested could not be found.';
     exit;
 }

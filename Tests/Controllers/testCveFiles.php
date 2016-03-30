@@ -5,7 +5,7 @@ use CveTests\Mocks\MockConfig;
 class testCveFiles extends PHPUnit_Framework_TestCase
 {
     public function testIndexChecksRequestTypeAndSendOutPut() {
-        $mockCveFiles = $this->getMock('mockCveFiles', array('checkRequestMethod', 'parseFromCsv', 'outPutData'), [], '', false);
+        $mockCveFiles = $this->getMock('mockCveFiles', array('checkRequestMethod', 'parseFromCsv', 'outputData'), [], '', false);
         $mockCveFiles->expects($this->once())
             ->method('checkRequestMethod')
             ->with('POST');
@@ -26,7 +26,7 @@ class testCveFiles extends PHPUnit_Framework_TestCase
         $mockCveModel = $this->getMock('\CveTests\Mocks\MockCVEModel', ['clearCVEData'], [], '', false);
         $mockCveModel->expects($this->once())
             ->method('clearCVEData');
-        $mockCveFiles = $this->getMock('mockCveFiles', array('checkRequestMethod', 'outPutData'), [true], '', true);
+        $mockCveFiles = $this->getMock('mockCveFiles', array('checkRequestMethod', 'outputData'), [true], '', true);
         $mockCveFiles->setCVEModelMock($mockCveModel);
         $mockCveFiles->index();
         //two records processed
