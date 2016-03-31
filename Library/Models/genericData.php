@@ -11,9 +11,16 @@ namespace Cve\Models;
 
 class genericData implements DataInterface
 {
+    /**
+     * @var string|array $data
+     */
     public $data;
 
-    public function __construct(array $data) {
+    /**
+     * genericData constructor.
+     * @param array|string $data
+     */
+    public function __construct($data) {
         $this->data = $data;
     }
 

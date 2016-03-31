@@ -1,4 +1,5 @@
 <?php
+
 namespace Cve\Models;
 
 /**
@@ -9,17 +10,19 @@ namespace Cve\Models;
  */
 class CVEModel extends CoreModel
 {
+    /**
+     * Saves a record to the database
+     * @param array $record
+     */
     public function saveCVERecord($record) {
         try {
             $this->dbDriver->beginTransaction();
 
             $this->insertCVERecord($record);
-            //clear all the data for this record;
-
             $this->insertCVEComments($record['name'], $record['comments']);
             $this->insertCVEVotes($record['name'], $record['votes']);
-            //clear all the data for this record;
             $this->insertCVEReferences($record['name'], $record['references']);
+
             $this->dbDriver->commit();
         } catch (\Exception $e) {
             $this->logger->err($e->getMessage());
@@ -27,6 +30,20 @@ class CVEModel extends CoreModel
         }
     }
 
+    /**
+     * Truncates all the tables;
+     */
+    public function clearCVEData() {
+        $this->dbDriver->truncate("cve_records");
+        $this->dbDriver->truncate("cve_comments");
+        $this->dbDriver->truncate("cve_references");
+        $this->dbDriver->truncate("cve_votes");
+    }
+
+    /**
+     * Saves a record to the database
+     * @param array $records
+     */
     protected function insertCVERecord($records) {
         $this->dbDriver->insert(
             'cve_records',
@@ -39,6 +56,11 @@ class CVEModel extends CoreModel
         );
     }
 
+    /**
+     * Saves all comment supplied to a database
+     * @param string $cve_record_id
+     * @param array $comments
+     */
     protected function insertCVEComments($cve_record_id, $comments) {
         foreach ($comments as $comment) {
             if (!empty($comment['comment'])) {
@@ -54,6 +76,11 @@ class CVEModel extends CoreModel
         }
     }
 
+    /**
+     * Saves all votes supplied to a database
+     * @param string $cve_record_id
+     * @param array $votes
+     */
     protected function insertCVEVotes($cve_record_id, $votes) {
         foreach ($votes as $vote) {
             if (!empty($vote)) {
@@ -68,6 +95,11 @@ class CVEModel extends CoreModel
         }
     }
 
+    /**
+     * Saves all references supplied to a database
+     * @param string $cve_record_id
+     * @param array $references
+     */
     protected function insertCVEReferences($cve_record_id, $references) {
         foreach ($references as $reference) {
             if (!empty($reference)) {
@@ -82,14 +114,11 @@ class CVEModel extends CoreModel
         }
     }
 
-
-    public function clearCVEData() {
-        $this->dbDriver->truncate("cve_records");
-        $this->dbDriver->truncate("cve_comments");
-        $this->dbDriver->truncate("cve_references");
-        $this->dbDriver->truncate("cve_votes");
-    }
-
+    /**
+     * Gets a single record from the database using the cveNumber
+     * @param string $cveNumber
+     * @return CVERecord|null
+     */
     public function getRecord($cveNumber) {
         $where = [];
         if ($cveNumber) {
@@ -111,8 +140,16 @@ class CVEModel extends CoreModel
         } catch (\Exception $e) {
             $this->logger->err($e->getMessage());
         }
+        return null;
     }
 
+    /**
+     * Gets a list of records matching the given criteria
+     * @param null $limit
+     * @param int $offset
+     * @param null $year
+     * @return array|null
+     */
     public function getRecords($limit = null, $offset = 0, $year = null) {
         $where = [];
         if ($year) {
@@ -139,9 +176,14 @@ class CVEModel extends CoreModel
         } catch (\Exception $e) {
             $this->logger->err($e->getMessage());
         }
-        return null;
+        return array();
     }
 
+    /**
+     * Gets a records comments
+     * @param $cve_record_id
+     * @return array|null
+     */
     public function getComments($cve_record_id) {
         $where = array(array('AND', '=', 'cve_record_id', $cve_record_id, 'string'));
         try {
@@ -159,7 +201,11 @@ class CVEModel extends CoreModel
         return null;
     }
 
-
+    /**
+     * Gets a records references
+     * @param $cve_record_id
+     * @return array|null
+     */
     public function getReferences($cve_record_id) {
         $where = array(array('AND', '=', 'cve_record_id', $cve_record_id, 'string'));
         try {
@@ -177,6 +223,11 @@ class CVEModel extends CoreModel
         return null;
     }
 
+    /**
+     * Gets a records votes
+     * @param $cve_record_id
+     * @return array|null
+     */
     public function getVotes($cve_record_id) {
         $where = array(array('AND', '=', 'cve_record_id', $cve_record_id, 'string'));
         try {

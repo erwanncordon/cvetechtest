@@ -20,6 +20,11 @@ class CveFiles extends CoreController
      */
     protected $cveModel;
 
+    /**
+     * @var array Fields and array index of the fields in the csv file.
+     * Normally these are supplied in the csv file, but the csv file is in shambles for the first few lines,
+     * and it would be hard to figure out which values represent the fields
+     */
     public $fields = array(
         'name' => 0,
         'status' => 1,
@@ -30,14 +35,22 @@ class CveFiles extends CoreController
         'comments' => 6
     );
 
+    /**
+     * @throws \Cve\Exceptions\IncorrectContentTypeException
+     * Parses the data from a csv, then outputs when finished.
+     */
     public function index() {
         //raised max execution time as it takes a while to parse and save all the data.
         ini_set('max_execution_time', 300);
         $this->checkRequestMethod('POST');
         $this->parseFromCsv();
-        $this->outputData(new genericData(array('status' => 'Finished importing CSV')), true);
+        $this->outputData(new genericData(array('status' => 'Finished importing CSV')));
     }
 
+    /**
+     * From a specified location in the config, a csv is fetched and parsed, for each line (which passes a criteria) the data is saved to a database
+     * @throws \Cve\Exceptions\MissingConfigException
+     */
     protected function parseFromCsv() {
         $fileLocation = Config::getConfig('cve_file_location');
         //the csv file contains a few lines which are descriptive about the file, rather than lines we care about.
@@ -70,6 +83,11 @@ class CveFiles extends CoreController
         }
     }
 
+    /**
+     * Convert the data from the datasource.
+     * @param $data
+     * @return array
+     */
     protected function prepareData($data) {
         $record = array(
             'name' => $data[$this->fields['name']],
@@ -101,15 +119,13 @@ class CveFiles extends CoreController
         $record['comments'] = $comments;
         $votes = explode('|', $record['votes']);
         $record['votes'] = array_map('trim', $votes);
-
-
         $references = explode('|', $record['references']);
         $record['references'] = array_map('trim', $references);
         return $record;
     }
 
     /**
-     * Allows for mocking for unit testing
+     * Sets CVEModel
      * @returns CVEModel
      */
     protected function setModels() {

@@ -1,61 +1,42 @@
 # RESTful Technical Test
 
 ## Prerequisites
-
-You are expected to have access to the Internet during the course of the development of this task, it is expected that you will have a suitable professional environment in which to complete the test.
-
-If you feel you do not meet these requirements, please contact the person who directed you to this test, and they can make arrangements for such things to be arranged.
-
-## Instructions
-
-The purpose of this test is to produce a small working application for review by your prospective employer, the details of the application have been provided below.
-
-The aim for the test is to understand how you structure your solution, and how you turn that solution into a working application. 
-
-You need to:
-
-* Produce working, object orientated, unit-tested code
-* Describe the setup of your project, and how to resolve any external dependencies 
-* Deliver the working application in some form to your prospective employer
-
-You are expected to:
-
-* Work on this task alone without help from anyone else
-* Ask questions if you do not understand anything you are being asked to do
-
-This test has no time limit given, what we expect you to do is read this brief, and reply to the person who asked you to complete it with your estimate on how long it will take you to complete the task.
-
-### The Assignment
-
-Before you begin to write your solution to the assignment, you should first fork this repository. You should (as you would with any project) commit regularly to your forked repository, and give the link to the person asking you to complete this test.
-
-`CVE is a dictionary of publicly known information security vulnerabilities and exposures.`
-
-Vulnerabilities that are found on publicly accessible software are generally assigned a CVE (Common Vulnerabilities and Exposures) reference number, as a singular way to reference a specific vulnerability without a more complex naming system having to remembered for each vulnerability.
-
-These CVE's contain information about the vulnerability itself, what software it affects, and what versions of that software, as well as some other useful information to help those attempting to discover if they are vulnerable, or attempting to remove that vulnerability from their software. This information is collated and presented by a not for profit called Mitre, is partially funded by the US Government. 
-
-On the Mitre website, they allow you to download all of the vulnerabilities found since the project started in 1999, they allow you to download all of the CVE's in various formats, including XML, TXT and CSV. 
-
-Your task is to create a RESTful API that presents this data in a structured and resource orientated manner. Your API should show the information for that CVE found in the file you downloaded from the Mitre website. You should show all of the details you can about the CVE being requested by the user.
-
-Your completed application should present the following interfaces and functionality:
-
-| Method | Interface | Description |
-| ------ | --------- | ----------- |
-| GET | /cve/:cveNumber  | Return a single CVE resource  |
-| GET | /cve  | Return multiple CVE resources. It should support: limiting of results, result offsets, the year of the vulnerabilities publishing  |
-
-Your interfaces should respond contextually based upon the Accept header sent by the requesting client, you may default to what ever preset you prefer.
-
-We would like you to send responses in application/xml and application/json, however you may add other supported response types if you would prefer.
-
-You should unit test your application, and if you feel so inclined we welcome you to write integration and full stack tests, depending on your experience with such technologies.
-
-## Things to remember
-
-When writing a RESTful API you are representing a *resource* above all other things, and should be mindful in your application's public interfaces because of this
-
-You are welcome to store the CVE's you download from Mitre in what ever fashion you wish, we suggest that you use an existing database technology to store the values from the file you download from Mitre, however you may choose which ever solution you think best.
+* PHP >= 5.6 - To install php 5.6 on Mac: http://justinhileman.info/article/reinstalling-php-on-mac-os-x/
+* Mod-rewrite enabled
+* htaccess is redable : https://help.ubuntu.com/community/EnablingUseOfApacheHtaccessFiles
+    make sure that the htaccess is in the root of you server htpdocs and points to the correct path for the index.php file.
+* MySQL
+    mysql username and password left as root, in production a new user would be created for mysql.
+    Add the correct MySQL config to Library/Config/Config.php
+* Composer - https://getcomposer.org/doc/00-intro.md -
+    then run $ composer.phar install
 
 
+## Importing the data:
+### Option 1
+import database file located at: Library/DB/cve.sql
+
+### Option 2
+Create a database cve
+Edit phinx.yml with correct Database Settings.
+to run migrations:
+$ php vendor/bin/phinx migrate -e development
+Download the allitems.csv from: https://cve.mitre.org/data/downloads/allitems.csv
+ and place it into the directory 'cve_files', if the file has a different name make sure to update the config. currently only csv upload is supported.
+not hit the url as a POST Request: {{url for this application}}/CveFiles
+the data will then upload to the databse, it take less than 5 minutes.
+
+# Running the code
+| Method | Interface | Description | example |
+| ------ | --------- | ----------- | --------|
+| GET | /cve/:cveNumber  | Return a single CVE resource | /cve/CVE-2000-0001 |
+| GET | /cve  | Return multiple CVE resources. It should support: limiting of results, result offsets, the year of the vulnerabilities publishing  | /cve?limit=2&offset=3&year=1999 OR  /cve/?limit=2&offset=3&year=1999 |
+
+##Setting Headers
+* X-LogLevel: INFO|DEBUG|WARN|ERR will set the debug level, this currently set to the highest level INFO
+* ENVIRONMENT: dev if this is set to dev, then error display will be turned on.
+* Accept: set to 'appliction/json' for json output or anything else for xml (as xml is the default, and if it can't find json it returns to default)
+
+##Notes
+Default get limit of 200 due to php running out of memory if all results are returned and then formatted
+Reason for db driver: application can be slightly modified to allow new db drivers such as mongo.

@@ -8,8 +8,10 @@
 
 namespace Cve\Models;
 
-
 interface DataInterface
 {
+    /**
+     * @return array|string
+     */
     public function getData();
 }

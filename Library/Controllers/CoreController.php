@@ -2,6 +2,7 @@
 namespace Cve\Controllers;
 
 use Cve\Exceptions\IncorrectContentTypeException;
+use Cve\Models\DataInterface;
 use Monolog\Logger;
 use SimpleXMLElement;
 
@@ -17,23 +18,22 @@ abstract class CoreController
      */
     protected $responseType;
 
+    abstract protected function setModels();
+
     /**
      * CoreController constructor.
      * @param Logger $logger
      */
     public function __construct(Logger $logger) {
-
         $acceptHeader = $this->getHeader('Accept');
         $this->responseType = stristr($acceptHeader, 'application/json') ? 'json' : 'xml';
         $this->logger = $logger;
         $this->setModels();
     }
 
-    abstract protected function setModels();
-
     /**
      * @param $expected
-     * @throws \Exception if request method does not match expected
+     * @throws IncorrectContentTypeException if request method does not match expected
      */
     public function checkRequestMethod($expected) {
         if (strtolower($_SERVER['REQUEST_METHOD']) !== strtolower($expected)) {
@@ -42,16 +42,31 @@ abstract class CoreController
     }
 
     /**
-     * @param $results
-     * @param bool $single
+     * @param array|DataInterface $data
+     */
+    public function outputData($data) {
+        if ($this->responseType === 'json') {
+            $this->setHeader('Content-Type: application/json;charset=utf-8');
+        } else {
+            $this->setHeader('Content-Type: application/xml');
+        }
+        $this->writeOutput($this->convertResultData($data));
+    }
+
+    /**
+     * Converts the supplised results into json or xml depending on the class var responseType
+     * @param array|DataInterface $results either an array of DataInterface objects or a single DataInterface object
      * @return mixed
      */
-    protected function convertResultData($results, $single = false) {
+    protected function convertResultData($results) {
+        $single = false;
         if (empty($results)) {
             $results = array();
         }
+        if (is_object($results)) {
+            $single = true;
+        }
         if ($results) {
-            //foreach is needed for when multiple records are passed in, it will convert and array of objects to an array of arrays
             if ($single) {
                 $results = $results->getData();
             } else {
@@ -79,9 +94,14 @@ abstract class CoreController
             $this->array_to_xml($results, $xml_data, 'records');
             return $xml_data->asXML();
         }
-
     }
 
+    /**
+     * Recursive function to change all arrays into child nodes.
+     * @param $data
+     * @param $xml_data
+     * @param $parentNode
+     */
     public function array_to_xml($data, &$xml_data, $parentNode) {
         foreach ($data as $key => $value) {
             if (is_array($value)) {
@@ -100,19 +120,6 @@ abstract class CoreController
     }
 
     /**
-     * @param $data
-     * @param $single
-     */
-    public function outputData($data, $single = false) {
-        if ($this->responseType === 'json') {
-            $this->setHeader('Content-Type: application/json;charset=utf-8');
-        } else {
-            $this->setHeader('Content-Type: application/xml');
-        }
-        $this->writeOutput($this->convertResultData($data, $single));
-    }
-
-    /**
      * used for mocking in test.
      * @param $data
      */
@@ -120,10 +127,18 @@ abstract class CoreController
         echo $data;
     }
 
+    /**
+     * used for mocking in test.
+     * @param $header
+     */
     protected function setHeader($header) {
         header($header);
     }
 
+    /**
+     * used for mocking in test.
+     * @param $header
+     */
     public function getHeader($header) {
         return getallheaders()[$header];
     }

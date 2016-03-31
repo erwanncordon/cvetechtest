@@ -8,21 +8,10 @@
 
 namespace Cve\DB;
 
-use Cve\Helpers\Config;
-use PDO;
-use PDOException;
-
-
 interface DBInterface
 {
-    /**
-     * @return mixed
-     */
     public function beginTransaction();
 
-    /**
-     * @return mixed
-     */
     public function commit();
 
     /**
@@ -31,6 +20,7 @@ interface DBInterface
     public function rollBackTransaction();
 
     /**
+     * Fetch List of data of database
      * @param $table
      * @param $where
      * @param null $limit
@@ -42,6 +32,7 @@ interface DBInterface
     public function fetchAll($table, $where, $limit = null, $offset = 0, $class = null, $fields = '*');
 
     /**
+     * Fetch single item from database
      * @param $table
      * @param $where
      * @param null $class
@@ -50,11 +41,16 @@ interface DBInterface
     public function fetch($table, $where, $class = null);
 
     /**
+     * Truncate a specified table
      * @param $table
-     * @return mixed
      */
     public function truncate($table);
 
+    /**
+     * Insert Data into Database
+     * @param $table
+     * @param $parameters
+     */
     public function insert($table, $parameters);
 
 

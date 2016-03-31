@@ -34,7 +34,6 @@ class PdoDriver implements DBInterface
         if (null === static::$instance) {
             static::$instance = new static();
         }
-
         return static::$instance;
     }
 
@@ -90,12 +89,14 @@ class PdoDriver implements DBInterface
         }
     }
 
+
     /**
+     * Fetch List of data of database
      * @param $table
      * @param array $where formate: array(array('AND|OR', operator, mysqlField, Value))
-     * @param null $limit
+     * @param mixed $limit
      * @param int $offset
-     * @param null $class
+     * @param mixed $class
      * @param string $fields
      * @return mixed
      */
@@ -105,12 +106,11 @@ class PdoDriver implements DBInterface
         if ($where) {
             $sql .= ' WHERE ';
             $whereClause = '';
-            //$sql .= ' WHERE cve_records.name LIKE :year';
 
             foreach ($where as $value) {
                 $whereClause .= " " . strtoupper($value[0]) . " $value[2] $value[1] :$value[2]";
             }
-            //remove any remaning ANDs or ORs
+            //remove any remaining ANDs or ORs
             $whereClause = trim($whereClause, ' AND ');
             $whereClause = trim($whereClause, ' OR ');
             $sql .= $whereClause;
@@ -122,7 +122,6 @@ class PdoDriver implements DBInterface
             $sql .= ' offset :offset';
         }
 
-        //see if there's a better way than appending text
         if ($where || $limit !== null || $offset) {
             $statement = $this->db->prepare($sql);
             foreach ($where as $value) {
@@ -146,6 +145,7 @@ class PdoDriver implements DBInterface
         } else {
             $results = $this->db->query($sql);
         }
+        //binds results to a class and returns the new class
         if ($class) {
             return $results->fetchAll(PDO::FETCH_CLASS, $class);
         }
@@ -168,8 +168,7 @@ class PdoDriver implements DBInterface
     /**
      * @param string $table
      * @param array $parameters [field=>[value, type]]
-     *
-     */
+     * ß*/
     public function insert($table, $parameters) {
         $sql = "INSERT INTO $table(";
         $inserts = '';
@@ -191,12 +190,19 @@ class PdoDriver implements DBInterface
         $statement->execute();
     }
 
+    /**
+     * @param string $table
+     */
     public function truncate($table) {
         $sql = "TRUNCATE TABLE " . $table;
         $stmt = $this->db->prepare($sql);
         $stmt->execute();
     }
 
+    /**
+     * @param $type
+     * @return int|null
+     */
     protected function convertTypeToPDOType($type) {
         return $type === 'string' ? PDO::PARAM_STR : $type === 'int' ? PDO::PARAM_INT : null;
     }

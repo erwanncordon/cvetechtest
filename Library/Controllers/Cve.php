@@ -19,7 +19,10 @@ class Cve extends CoreController
      */
     protected $cveModel;
 
-
+    /**
+     * index either gets on record or a set of records depending on if a cveNumber is supplied or not
+     * @param array $arguments
+     */
     public function index($arguments) {
         $cveNumber = !empty($arguments[0]) ? $arguments[0] : null;
         if ($cveNumber) {
@@ -29,6 +32,11 @@ class Cve extends CoreController
         }
     }
 
+    /**
+     * Gets a list of cveRecord objects and sends them to outputData
+     * @throws \Cve\Exceptions\IncorrectContentTypeException
+     * @throws \Cve\Exceptions\MissingConfigException
+     */
     public function getCVEs() {
         $this->checkRequestMethod('GET');
         $limit = (int)(isset($_GET['limit']) && $_GET['limit']) ? $_GET['limit'] : Config::getConfig('default_get_limit');
@@ -38,14 +46,19 @@ class Cve extends CoreController
         $this->outputData($result);
     }
 
+    /**
+     * Gets a single cveRecord objects and sends them to outputData
+     * @param $cveNumber
+     * @throws \Cve\Exceptions\IncorrectContentTypeException
+     */
     public function getCVE($cveNumber) {
         $this->checkRequestMethod('GET');
         $result = $this->cveModel->getRecord($cveNumber);
-        $this->outputData($result, true);
+        $this->outputData($result);
     }
 
     /**
-     * Allows for mocking for unit testing
+     * sets the cveModel
      */
     protected function setModels() {
         $this->cveModel = new CVEModel($this->logger, PdoDriver::getInstance());

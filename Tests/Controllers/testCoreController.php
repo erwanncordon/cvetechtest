@@ -2,7 +2,6 @@
 
 class testCoreController extends PHPUnit_Framework_TestCase
 {
-
     public function testConstructor() {
         $logger = new \CveTests\Mocks\MockLogger();
         $mockCoreController = $this->getMockForAbstractClass('mockCoreController', array(), 'coreController', false, false, true, array('setModels', 'getheader'));
@@ -74,7 +73,7 @@ class testCoreController extends PHPUnit_Framework_TestCase
             ->with('["foo"]');
         $data = new \Cve\Models\genericData(array('foo'));
         $mockCoreController->__construct(new \CveTests\Mocks\MockLogger());
-        $mockCoreController->outputData($data, true);
+        $mockCoreController->outputData($data);
     }
 
     public function testOutputDataWithCVERecordData() {
@@ -92,9 +91,8 @@ class testCoreController extends PHPUnit_Framework_TestCase
         $record = $this->getRecordData();
 
         $mockCoreController->__construct(new \CveTests\Mocks\MockLogger());
-        $mockCoreController->outputData($record, true);
+        $mockCoreController->outputData($record);
     }
-
 
     public function testOutputDataWithXml() {
         $mockCoreController = $this->getMockForAbstractClass('mockCoreController', array(), '', false, false, true, array('setheader', 'writeOutput', 'setModels', 'getheader'));
@@ -112,7 +110,7 @@ class testCoreController extends PHPUnit_Framework_TestCase
 ');
         $data = new \Cve\Models\genericData(array('something' => 'foo'));
         $mockCoreController->__construct(new \CveTests\Mocks\MockLogger());
-        $mockCoreController->outputData($data, true);
+        $mockCoreController->outputData($data);
     }
 
     public function testOutputDataWithXmlAndRecordData() {
@@ -130,12 +128,11 @@ class testCoreController extends PHPUnit_Framework_TestCase
 <record><name>some Record</name><description>some status</description><status>some description</status><phase>some phase</phase><comments><comment><author>first author</author><user_comment>some comment</user_comment></comment><comment><author>second author</author><user_comment>some commentsss</user_comment></comment></comments><votes><vote>I made a vote</vote></votes><references><reference>some reference</reference><reference>some second reference</reference><reference>some third reference</reference></references></record>
 ');
         $mockCoreController->__construct(new \CveTests\Mocks\MockLogger());
-        $mockCoreController->outputData($this->getRecordData(), true);
+        $mockCoreController->outputData($this->getRecordData());
     }
 
     private function getRecordData() {
         $record = new \Cve\Models\CVERecord(new \CveTests\Mocks\MockLogger(), new \CveTests\Mocks\MockDBDriver(), 'some Record', 'some status', 'some description', 'some phase');
-
         $comment1 = new \Cve\Models\CVEComment();
         $comment1->author = 'first author';
         $comment1->user_comment = 'some comment';

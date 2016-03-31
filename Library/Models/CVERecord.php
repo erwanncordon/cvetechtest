@@ -9,30 +9,54 @@
 namespace Cve\Models;
 
 
-class CVERecord extends CVEModel implements DataInterface
+use Cve\DB\DBInterface;
+use Monolog\Logger;
 
+class CVERecord extends CVEModel implements DataInterface
 {
+
+    /**
+     * @var string name
+     */
     public $name;
+    /**
+     * @var string description
+     */
     public $description;
+    /**
+     * @var string status
+     */
     public $status;
+    /**
+     * @var string phase
+     */
     public $phase;
 
     /**
-     * @var [Comment]
+     * @var [CVEComment] $comments
      */
     public $comments = [];
 
     /**
-     * @var [CVEReference]
+     * @var [CVEReference] $references
      */
     public $references = [];
 
     /**
-     * @var [CVEVote]
+     * @var [CVEVote] $votes
      */
     public $votes = [];
 
-    public function __construct($logger, $dbDriver, $name, $description, $status, $phase) {
+    /**
+     * CVERecord constructor.
+     * @param \Monolog\Logger $logger
+     * @param \Cve\DB\DBInterface $dbDriver
+     * @param string $name
+     * @param string $description
+     * @param string $status
+     * @param string $phase
+     */
+    public function __construct(Logger $logger, DBInterface $dbDriver, $name, $description, $status, $phase) {
         $this->name = $name;
         $this->description = $description;
         $this->status = $status;
@@ -40,12 +64,18 @@ class CVERecord extends CVEModel implements DataInterface
         parent::__construct($logger, $dbDriver);
     }
 
+    /**
+     * Decorate the CVERecord object by fetching extra data
+     */
     public function decorate() {
         $this->comments = $this->getComments($this->name);
         $this->references = $this->getReferences($this->name);
         $this->votes = $this->getVotes($this->name);
     }
 
+    /**
+     * @return array
+     */
     public function getData() {
         $record = array(
             'name' => $this->name,

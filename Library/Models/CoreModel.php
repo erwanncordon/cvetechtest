@@ -14,7 +14,11 @@ use Monolog\Logger;
 
 class CoreModel
 {
+    /**
+     * @var DBInterface|null
+     */
     protected $dbDriver;
+
     /**
      * @var Logger $logger
      */
@@ -22,11 +26,10 @@ class CoreModel
 
     /**
      * Sets which db drive will be used.
-     * CoreModel constructor.
-     * @param $logger
+     * @param Logger $logger
      * @param DBInterface $dbDriver
      */
-    public function __construct($logger, $dbDriver = null) {
+    public function __construct(Logger $logger, DBInterface $dbDriver = null) {
         $this->logger = $logger;
         $this->dbDriver = $dbDriver;
     }
