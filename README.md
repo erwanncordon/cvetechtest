@@ -19,8 +19,10 @@ import database file located at: Library/DB/cve.sql
 ### Option 2
 Create a database cve
 Edit phinx.yml with correct Database Settings.
-to run migrations:
+
+To run migrations:
 $ php vendor/bin/phinx migrate -e development
+
 Download the allitems.csv from: https://cve.mitre.org/data/downloads/allitems.csv
  and place it into the directory 'cve_files', if the file has a different name make sure to update the config. currently only csv upload is supported.
 not hit the url as a POST Request: {{url for this application}}/CveFiles
